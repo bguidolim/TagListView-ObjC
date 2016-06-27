@@ -10,7 +10,7 @@
 #import "TagView.h"
 
 @interface TagListView ()
-
+@property (nonatomic) NSMutableArray *rowContent;
 @end
 
 @implementation TagListView
@@ -89,9 +89,14 @@
     [self rearrangeViews];
 }
 
-- (void)setRows:(int)rows {
+- (void)setRows:(NSInteger)rows {
     _rows = rows;
     [self invalidateIntrinsicContentSize];
+}
+
+- (void)setAlignment:(TagListViewAlignment)alignment {
+    _alignment = alignment;
+    [self rearrangeViews];
 }
 
 # pragma mark - Interface builder
@@ -115,8 +120,10 @@
         [tagView removeFromSuperview];
     }
     
-    int currentRow = 0;
-    int currentRowTagCount = 0;
+    self.rowContent = [NSMutableArray new];
+    NSInteger oldRow = 0;
+    NSInteger currentRow = 0;
+    NSInteger currentRowTagCount = 0;
     CGFloat currentRowWidth = 0;
     for(TagView *tagView in [self tagViews]) {
         CGRect tagViewFrame = [tagView frame];
@@ -143,9 +150,36 @@
             currentRowWidth += tagView.frame.size.width + [self marginX];
         }
         
+        if (oldRow != currentRow) {
+            oldRow = currentRow;
+            if (self.rowContent.count != currentRow) {
+                [self.rowContent addObject:[NSMutableArray new]];
+            }
+        }
+        [[self.rowContent objectAtIndex:currentRow-1] addObject:tagView];
+        
         [self addSubview:tagView];
     }
     self.rows = currentRow;
+    
+    if (self.alignment == TagListViewAlignmentCenter) {
+        [self centralize];
+    }
+}
+
+- (void)centralize {
+    for (NSArray *array in self.rowContent) {
+        CGFloat middle = self.frame.size.width/2.0f;
+        CGFloat totalWidth = 0.0f;
+        for (TagView *tagView in array) {
+            totalWidth += tagView.frame.size.width;
+        }
+        CGFloat startPoint = middle-(totalWidth/2.0f);
+        for (TagView *tagView in array) {
+            tagView.frame = CGRectMake(startPoint, tagView.frame.origin.y, tagView.frame.size.width, tagView.frame.size.height);
+            startPoint += tagView.frame.size.width + [self marginX];
+        }
+    }
 }
 
 # pragma mark - Manage tags
@@ -184,7 +218,7 @@
 
 - (void)removeTag:(NSString *)title {
     // Author's note: Loop the array in reversed order to remove items during loop
-    for(int index = (int)[[self tagViews] count] - 1 ; index <= 0; index--) {
+    for(NSInteger index = (NSInteger)[[self tagViews] count] - 1 ; index <= 0; index--) {
         TagView *tagView = [[self tagViews] objectAtIndex:index];
         if([[tagView currentTitle] isEqualToString:title]) {
             [tagView removeFromSuperview];

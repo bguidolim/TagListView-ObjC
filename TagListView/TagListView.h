@@ -12,6 +12,11 @@
 
 IB_DESIGNABLE
 
+typedef NS_ENUM(NSInteger, TagListViewAlignment) {
+    TagListViewAlignmentLeft,
+    TagListViewAlignmentCenter
+};
+
 @interface TagListView : UIView
 
 @property (nonatomic) IBInspectable UIColor *textColor;
@@ -23,13 +28,14 @@ IB_DESIGNABLE
 @property (nonatomic) IBInspectable CGFloat paddingX;
 @property (nonatomic) IBInspectable CGFloat marginY;
 @property (nonatomic) IBInspectable CGFloat marginX;
+@property (nonatomic) IBInspectable TagListViewAlignment alignment;
 @property (nonatomic) UIFont *textFont;
 
 
 // Delegate variables
 @property (nonatomic) CGFloat tagViewHeight;
 @property (nonatomic) NSMutableArray *tagViews;
-@property (nonatomic) int rows;
+@property (nonatomic) NSInteger rows;
 
 - (TagView *)addTag:(NSString *)title;
 - (void)removeTag:(NSString *)title;
