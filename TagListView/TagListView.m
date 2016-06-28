@@ -172,12 +172,12 @@
         CGFloat middle = self.frame.size.width/2.0f;
         CGFloat totalWidth = 0.0f;
         for (TagView *tagView in array) {
-            totalWidth += tagView.frame.size.width;
+            totalWidth += tagView.frame.size.width+[self marginX];
         }
-        CGFloat startPoint = middle-(totalWidth/2.0f);
+        CGFloat startPoint = middle-(totalWidth/2.0f)+[self marginX]/2.0f;
         for (TagView *tagView in array) {
             tagView.frame = CGRectMake(startPoint, tagView.frame.origin.y, tagView.frame.size.width, tagView.frame.size.height);
-            startPoint += tagView.frame.size.width + [self marginX];
+            startPoint += tagView.frame.size.width+[self marginX];
         }
     }
 }
